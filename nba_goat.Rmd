@@ -1,0 +1,303 @@
+---
+title: "nba_goat"
+author: "Botond Babak"
+date: "5/21/2020"
+output: html_document
+---
+
+```{r}
+library(readr)
+Jordan <- read_csv("jordan_career.csv")
+head(Jordan)
+Kobe <- read_csv("kobe_career.csv")
+head(Kobe)
+Lebron <- read_csv("lebron_career.csv")
+head(Lebron)
+```
+
+```{r}
+just.jordan <- Jordan[(Jordan$Name == 'Michael Jordan'),]
+head(just.jordan)
+just.kobe <- Kobe[(Kobe$Name == 'Kobe Bryant'),]
+just.lebron <- Lebron[(Lebron$Name == 'LeBron James'),]
+```
+
+```{r}
+jordan.career.avg.b = data.frame("Name" = "Michael Jordan",
+                                "Career 2PA AVG" = mean(just.jordan$`TwoPA`),
+                                "Career 2PPercent AVG" = mean(just.jordan$`TwoPPercent`)*100,
+                                "Career 3PA AVG" = mean(just.jordan$`ThreePA`),
+                                "Career 3PPercent AVG" = mean(just.jordan$`ThreePPercent`)*100,
+                                "Career FTPercent AVG" = mean(just.jordan$`FTPercent`)*100,
+                                 "Career eFGPercent" = mean(just.jordan$`eFGPercent`)*100)
+kobe.career.avg.b = data.frame("Name" = "Kobe Bryant",
+                              "Career 2PA AVG" = mean(just.kobe$`TwoPA`),
+                              "Career 2PPercent AVG" = mean(just.kobe$`TwoPPercent`)*100,
+                              "Career 3PA AVG" = mean(just.kobe$`ThreePA`),
+                              "Career 3PPercent AVG" = mean(just.kobe$`ThreePPercent`)*100,
+                              "Career FTPercent AVG" = mean(just.kobe$`FTPercent`)*100,
+                              "Career eFGPercent" = mean(just.kobe$`eFGPercent`)*100)
+lebron.career.avg.b = data.frame("Name" = "LeBron James",
+                                "Career 2PA AVG" = mean(just.lebron$`TwoPA`),
+                                "Career 2PPercent AVG" = mean(just.lebron$`TwoPPercent`)*100,
+                                "Career 3PA AVG" = mean(just.lebron$`ThreePA`),
+                                "Career 3PPercent AVG" = mean(just.lebron$`ThreePPercent`)*100,
+                                "Career FTPercent AVG" = mean(just.lebron$`FTPercent`)*100,
+                                 "Career eFGPercent" = mean(just.lebron$`eFGPercent`)*100)
+goats.b <- rbind(jordan.career.avg.b, kobe.career.avg.b, lebron.career.avg.b)
+head(goats.b)
+```
+
+```{r}
+library(ggplot2)
+library(reshape2)
+
+goats.flipped <- data.frame(t(goats.b[-1]))
+colnames(goats.flipped) <- goats.b[, 1]
+names(goats.flipped)[names(goats.flipped) == "X1"] <- "Michael Jordan"
+names(goats.flipped)[names(goats.flipped) == "X2"] <- "Kobe Bryant"
+names(goats.flipped)[names(goats.flipped) == "X3"] <- "LeBron James"
+goats.flipped
+goats.flipped<-tibble::rownames_to_column(goats.flipped, "stats")
+
+data.me <- melt(goats.flipped, id.vars = "stats")
+data.me
+
+ggplot(data.me, aes(stats, value)) + geom_bar(aes(fill = variable), 
+   width = 0.4, position = position_dodge(width=0.5), stat="identity") +  
+   theme(legend.position="top", legend.title = 
+   element_blank(),axis.title.x=element_blank(),axis.text.x=element_text(angle=90,hjust=1,vjust=0.5), 
+   axis.title.y=element_blank()) + scale_fill_manual(values=c("red1","gold2", "firebrick"))
+```
+Ahogy az látható az első ábrán, először hármójuk statisztikáit szerettem volna összehasonlítani csak egyszerűen. Mint itt látszódik is, a legtöbb első helye LeBron James-nek van, viszont nem szabad elfelejteni, hogy ő Small Forward/Power Forward, Michael Jordan Shooting Guard/Small Forward Kobe Bryant pedig Shooting Guard poszton játszott, tehát érdemes már itt leszögezni, hogy ezek az összehasonlítások nem feltétlenül helytállóak, hiszen a három játékos más-más posztokat töltött be.
+
+
+```{r}
+jordan.career.avg.s = data.frame("Name" = "Michael Jordan",
+                                "Career ORB AVG" = mean(just.jordan$`ORB`),
+                                "Career DRB AVG" = mean(just.jordan$`DRB`),
+                                "Career AST AVG" = mean(just.jordan$`AST`),
+                                "Career STL AVG" = mean(just.jordan$`STL`),
+                                "Career BLK AVG" = mean(just.jordan$`BLK`))
+kobe.career.avg.s = data.frame("Name" = "Kobe Bryant",
+                              "Career ORB AVG" = mean(just.kobe$`ORB`),
+                              "Career DRB AVG" = mean(just.kobe$`DRB`),
+                              "Career AST AVG" = mean(just.kobe$`AST`),
+                              "Career STL AVG" = mean(just.kobe$`STL`),
+                              "Career BLK AVG" = mean(just.kobe$`BLK`))
+lebron.career.avg.s = data.frame("Name" = "LeBron James",
+                                "Career ORB AVG" = mean(just.lebron$`ORB`),
+                                "Career DRB AVG" = mean(just.lebron$`DRB`),
+                                "Career AST AVG" = mean(just.lebron$`AST`),
+                                "Career STL AVG" = mean(just.lebron$`STL`),
+                                "Career BLK AVG" = mean(just.lebron$`BLK`))
+goats.s <- rbind(jordan.career.avg.s, kobe.career.avg.s, lebron.career.avg.s)
+head(goats.s)
+
+goats.flipped.s <- data.frame(t(goats.s[-1]))
+colnames(goats.flipped.s) <- goats.s[, 1]
+names(goats.flipped.s)[names(goats.flipped.s) == "X1"] <- "Michael Jordan"
+names(goats.flipped.s)[names(goats.flipped.s) == "X2"] <- "Kobe Bryant"
+names(goats.flipped.s)[names(goats.flipped.s) == "X3"] <- "LeBron James"
+goats.flipped.s
+goats.flipped.s <-tibble::rownames_to_column(goats.flipped.s, "stats")
+
+data.m <- melt(goats.flipped.s, id.vars = "stats")
+data.m
+
+ggplot(data.m, aes(stats, value)) + geom_bar(aes(fill = variable), 
+   width = 0.4, position = position_dodge(width=0.5), stat="identity") +  
+   theme(legend.position="top", legend.title = 
+   element_blank(),axis.title.x=element_blank(),axis.text.x=element_text(angle=90,hjust=1,vjust=0.5), 
+   axis.title.y=element_blank()) + scale_fill_manual(values=c("red1","gold2", "firebrick"))
+```
+A különböző posztok itt is kitűnnek, Kobe feladata Shooting Guardként nem a lepattanók begyűjtése volt, de ennek ellenére az látszik, hogy hármójuk közül LeBron tűnik a leginkább csapatjátékosnak. Az assistok terén rendkívül kiugró, valamint a defensive reboundok terén is úgy tűnik, hogy LeBron sokkal többet mozgott vissza védekezni, mint két társa.
+
+
+```{r}
+without.jordan <- Jordan[(Jordan$Name != 'Michael Jordan'),]
+without.kobe <- Kobe[(Kobe$Name != 'Kobe Bryant'),]
+without.lebron <- Lebron[(Lebron$Name != 'LeBron James'),]
+```
+
+
+```{r}
+
+drop <- c("Rk","Name", "Age", "FG%", "ThreeP", "TwoP", "PF", "PTS/G", "G", "GS", "MP")
+without.jordan = without.jordan[,!(names(without.jordan) %in% drop)]
+without.jordan.by.season <- aggregate(. ~ Season, without.jordan, mean, na.rm = TRUE)
+head(without.jordan.by.season)
+ggplot() + geom_line(data=without.jordan.by.season, aes(x=Season, y = FG , group = 1)) + geom_point() + geom_line(data=just.jordan, aes(x=Season, y = AST, group = 1), color = "red1")  +  
+   theme(axis.title.x=element_blank(),axis.text.x=element_text(angle=90,hjust=1,vjust=0.5)) + ggtitle("Field Goals made by Michael Jordan's team vary his assists")
+
+without.kobe <- Kobe[(Kobe$Name != 'Kobe Bryant'),]
+
+without.kobe = without.kobe[,!(names(without.kobe) %in% drop)]
+without.kobe.by.season <- aggregate(. ~ Season, without.kobe, mean, na.rm = TRUE)
+#head(without.kobe.by.season)
+ggplot() + geom_line(data=without.kobe.by.season, aes(x=Season, y = FG , group = 1)) + geom_point() + geom_line(data=just.kobe, aes(x=Season, y = AST, group = 1), color = "gold2")  +  
+   theme(axis.title.x=element_blank(),axis.text.x=element_text(angle=90,hjust=1,vjust=0.5)) +  ggtitle("Field Goals made by Kobe Bryant's team vary his assists")
+
+without.lebron <- Lebron[(Lebron$Name != 'LeBron James'),]
+
+without.lebron = without.lebron[,!(names(without.lebron) %in% drop)]
+without.lebron.by.season <- aggregate(. ~ Season, without.lebron, mean, na.rm = TRUE)
+#head(without.lebron.by.season)
+ggplot() + geom_line(data= without.lebron.by.season, aes(x=Season, y = FG, group = 1)) + geom_point() + geom_line(data=just.lebron, aes(x=Season, y = AST, group = 1), color = "firebrick")  +  
+   theme(axis.title.x=element_blank(),axis.text.x=element_text(angle=90,hjust=1,vjust=0.5)) + ggtitle("Field Goals made by LeBron James's team vary his assists")
+```
+Viszont ezen a ponton úgy döntöttem, hogy egy olyan szempontból kezdem el vizsgálni a kérdést, amit még nemigen láttam. A három játékos csapatainak átlagos teljesítményét kezdtem vizsgálni.
+
+A fent látható diagramokon azt próbáltam bemutatni, hogy az adott játékos assistjai mennyire alakították a csapattársai által szerzett pontok mennyiségét, tehát az ő assistjai kulcsfontosságúak voltak-e a csapat teljesítményéhez.
+Mint az látható Jordan ábráján, az 1994-1995ös szezonnál a két függvény viszonylag együtt mozog, előtte viszont nemigen állíthatjuk ezt. Azonban ha megnézzük Kobe ábráját neki egészen a 2000-es évek elejétől a két függvény hasonlóképpen mozog, ellenben LeBronnal, akinél szinte nem lehet párhuzamot vonni a két függvény között.
+Pedig ha megnézzük az előző ábrát pont Kobe az, aki a legkevesebb assistot átlagolt karrierje során meccsenként, és LeBron az, aki a legtöbbet. Ebből azt a következtetést tudom levonni, hogy LeBron hiába adott sok assistot, úgy tűnik a csapata szintén élen járt assistok terén nem úgy, mint Kobe csapata.
+
+
+
+```{r}
+ggplot() + geom_line(data=without.jordan.by.season, aes(x=Season, y = AST , group = 1)) + geom_point() + geom_line(data=just.jordan, aes(x=Season, y = FG, group = 1), color = "red1")  +  
+   theme(axis.title.x=element_blank(),axis.text.x=element_text(angle=90,hjust=1,vjust=0.5)) + ggtitle("Field Goals made by Michael Jordan vary the assists of his team")
+
+ggplot() + geom_line(data=without.kobe.by.season, aes(x=Season, y = AST , group = 1)) + geom_point() + geom_line(data=just.kobe, aes(x=Season, y = FG, group = 1), color = "gold2")  +  
+   theme(axis.title.x=element_blank(),axis.text.x=element_text(angle=90,hjust=1,vjust=0.5)) +  ggtitle("Field Goals made by Kobe Bryant vary the assists of his team")
+
+ggplot() + geom_line(data= without.lebron.by.season, aes(x=Season, y = AST, group = 1)) + geom_point() + geom_line(data=just.lebron, aes(x=Season, y = FG, group = 1), color = "firebrick")  +  
+   theme(axis.title.x=element_blank(),axis.text.x=element_text(angle=90,hjust=1,vjust=0.5)) + ggtitle("Field Goals made by LeBron James vary the assists of his team")
+```
+Ezért gondoltam megnézem, hogy fordított esetben hogy néz ki ez a diagram, tehát a játékosok mekkora részét kaphatták a csapatuk assistjainak. Itt mint az látható nem sok hasonlóság látható az egyes függvények között.
+
+```{r}
+ggplot() + geom_line(data=without.jordan.by.season, aes(x=Season, y = FGA , group = 1)) + geom_point() + geom_line(data=just.jordan, aes(x=Season, y = FGA, group = 1), color = "red1")  +  
+   theme(axis.title.x=element_blank(),axis.text.x=element_text(angle=90,hjust=1,vjust=0.5)) + ggtitle("Difference between the Field Goal Attempts of Michael Jordan and his team") 
+
+ggplot() + geom_line(data=without.kobe.by.season, aes(x=Season, y = FGA , group = 1)) + geom_point() + geom_line(data=just.kobe, aes(x=Season, y = FGA, group = 1), color = "gold2")  +  
+   theme(axis.title.x=element_blank(),axis.text.x=element_text(angle=90,hjust=1,vjust=0.5)) +  ggtitle("Difference between the Field Goal Attempts of Kobe Bryant and his team")
+
+ggplot() + geom_line(data= without.lebron.by.season, aes(x=Season, y = FGA, group = 1)) + geom_point() + geom_line(data=just.lebron, aes(x=Season, y = FGA, group = 1), color = "firebrick")  +  
+   theme(axis.title.x=element_blank(),axis.text.x=element_text(angle=90,hjust=1,vjust=0.5)) + ggtitle("Difference between the Field Goal Attempts of LeBron James and his team")
+```
+Ezután azt vizsgáltam, hogy az adott játékos mennyire tűnik ki a csapatából pontszerzések terén. Ha az adott évben a csapata visszaesett pontszerzésekben ő kimagasló volt-e, vagy általában úgy mozgott, mint a csapata.
+Ez véleményem szerint Kobe Bryantnél a legérdekesebb, ugyanis látszódik, hogy amikor ő jobban teljesített, mint előző években akkor a csapata kevésbé, és ez fordítva is elmondható szinte az egész karrierje során, tehát úgy néz ki számomra talán ő volt a legsorsfordítóbb a csapatában ezen a téren.
+
+
+A saját elméleteim után egy az edzők által használt, a csapat hatékonyságát mérő módszerrel kezdtem dolgozni, ami az alábbi módszer alapján számolja egy csapat hatékonyságát.
+# How to measure a teams game? Four factors.
+
+Shooting (40%): Effective Field Goal Percentage(eFG%) alapján mérik
+               Equals: (FG + 0.5 * 3P)/ FGA
+Turnovers (25%): A Turnover sok dolog lehet, de szerencsére a datasetünkben van egy TOV mérőszám.
+               Equals: TOV / (FGA + 0.44 * FTA + TOV)
+Rebounding (20%): A Rebounding kiszámolásához szükségünk lenne minden meccsen az ellenfél által összeszedett Offensive és Defensive lepattanókra, viszont ez rengeteg meccset jelentene, ezért az adott évben a csapatok által meccsenként összeszedett lepattanók átlagát használom.
+
+Equals:  for offense: ORB / (ORB + Opp DRB); for defense: DRB / (Opp ORB + DRB)
+Free throws (15%): Equals: FT / FGA.
+
+```{r}
+jordan.NBA.ORB.AVG <- c(14.3, 14.1, 14.7, 14.2, 14.5, 13.8, 14.0, 14.4, 13.8, 13.0, 12.6, 12.7, 13.1, 12.2, 12.0)
+jordan.NBA.DRB.AVG <- c(29.2, 29.4, 29.3, 29.2, 29.4, 29.3, 29.3, 29.3, 29.3, 28.5, 28.6, 28.4, 28.5, 30.2, 30.3)
+
+kobe.NBA.ORB.AVG <- c(12.7, 13.1, 12.6, 12.4, 12.0, 12.2, 12.0, 12.1, 12.0, 11.2, 11.1, 11.2, 11.0, 11.0, 10.9, 11.4, 11.2, 10.9, 10.9, 10.4)
+kobe.NBA.DRB.AVG <- c(28.4, 28.5, 29.1, 30.5, 30.5, 30.2, 30.3, 30.1, 29.8, 29.8, 29.9, 30.8, 30.3, 30.8, 30.5, 30.8, 31.0, 31.8, 32.4, 33.3)
+
+lebron.NBA.ORB.AVG <- c(12.1, 12.0, 11.2, 11.1, 11.2, 11.0, 11.0, 10.9, 11.4, 11.2, 10.9, 10.9, 10.4, 10.1, 9.7, 10.3)
+lebron.NBA.DRB.AVG <- c(30.1, 29.8, 29.8, 29.9, 30.8, 30.3, 30.8, 30.5, 30.8, 31.0, 31.8, 32.4, 33.3, 33.4, 33.8, 34.8)
+```
+
+```{r}
+without.jordan.by.season$NBA.ORB.AVG <- jordan.NBA.ORB.AVG
+without.jordan.by.season$NBA.DRB.AVG <- jordan.NBA.DRB.AVG
+
+without.kobe.by.season$NBA.ORB.AVG <- kobe.NBA.ORB.AVG
+without.kobe.by.season$NBA.DRB.AVG <- kobe.NBA.DRB.AVG
+
+without.lebron.by.season$NBA.ORB.AVG <- lebron.NBA.ORB.AVG
+without.lebron.by.season$NBA.DRB.AVG <- lebron.NBA.DRB.AVG
+```
+
+```{r}
+team.effectiveness <- function(df){
+   eff <- df$eFGPercent*0.4 + (df$TOV/ (df$FGA + 0.44 * df$FTA + df$TOV))*0.25 + (df$ORB/ (df$ORB + df$NBA.DRB.AVG))*0.1 + (df$DRB/(df$DRB+ df$NBA.ORB.AVG))*0.1 + (df$FT / df$FGA) *0.15
+   return(eff)
+}
+ggplot() + geom_line(data=without.jordan.by.season, aes(x=Season, y = team.effectiveness(without.jordan.by.season), group = 1), color = "red1") + geom_line(data=without.kobe.by.season, aes(x=Season, y = team.effectiveness(without.kobe.by.season), group = 1), color = "gold2") + geom_line(data=without.lebron.by.season, aes(x=Season, y = team.effectiveness(without.lebron.by.season), group = 1), color = "firebrick") +
+   theme(axis.title.x=element_blank(),axis.text.x=element_text(angle=90,hjust=1,vjust=0.5)) + ggtitle("The effectiveness of the person's team by year without him") 
+```
+
+```{r}
+mean(team.effectiveness(without.jordan.by.season))
+mean(team.effectiveness(without.kobe.by.season))
+mean(team.effectiveness(without.lebron.by.season))
+```
+Először megvizsgáltam a csapatokat a három játékos nélkül. Itt az látható, hogy Jordan csapatában volt a legkisebb az ingadozás, és az átlag is azt mutatja, hogy az ő csapata rendelkezik a legjobb mutatóval, még akkor is, ha a számok elég közeliek.
+
+```{r}
+
+with.jordan = Jordan[,!(names(Jordan) %in% drop)]
+head(with.jordan)
+with.jordan.by.season <- aggregate(. ~ Season, with.jordan, mean, na.rm = TRUE)
+
+with.kobe = Kobe[,!(names(Kobe) %in% drop)]
+head(with.kobe)
+with.kobe.by.season <- aggregate(. ~ Season, with.kobe, mean, na.rm = TRUE)
+
+with.lebron = Lebron[,!(names(Lebron) %in% drop)]
+head(with.lebron)
+with.lebron.by.season <- aggregate(. ~ Season, with.lebron, mean, na.rm = TRUE)
+```
+
+```{r}
+with.jordan.by.season$NBA.ORB.AVG <- jordan.NBA.ORB.AVG
+with.jordan.by.season$NBA.DRB.AVG <- jordan.NBA.DRB.AVG
+
+with.kobe.by.season$NBA.ORB.AVG <- kobe.NBA.ORB.AVG
+with.kobe.by.season$NBA.DRB.AVG <- kobe.NBA.DRB.AVG
+
+with.lebron.by.season$NBA.ORB.AVG <- lebron.NBA.ORB.AVG
+with.lebron.by.season$NBA.DRB.AVG <- lebron.NBA.DRB.AVG
+```
+
+```{r}
+ggplot() + geom_line(data=with.jordan.by.season, aes(x=Season, y = team.effectiveness(with.jordan.by.season), group = 1), color = "red1") + geom_line(data=with.kobe.by.season, aes(x=Season, y = team.effectiveness(with.kobe.by.season), group = 1), color = "gold2") + geom_line(data=with.lebron.by.season, aes(x=Season, y = team.effectiveness(with.lebron.by.season), group = 1), color = "firebrick") +
+   theme(axis.title.x=element_blank(),axis.text.x=element_text(angle=90,hjust=1,vjust=0.5)) + ggtitle("The effectiveness of the person's team by year with him") 
+```
+```{r}
+mean(team.effectiveness(with.jordan.by.season))
+mean(team.effectiveness(with.kobe.by.season))
+mean(team.effectiveness(with.lebron.by.season))
+```
+Miután bevettük a három játékost a képletbe látszik, hogy a számok nőttek egyértelműen, de az ábrák hasonló függvényeket mutatnak.
+
+```{r}
+ggplot() + 
+   geom_line(data=with.jordan.by.season, aes(x=Season, y = team.effectiveness(with.jordan.by.season), group = 1), color = "red1") + 
+   geom_line(data=without.jordan.by.season, aes(x=Season, y = team.effectiveness(without.jordan.by.season), group = 1), color = "grey30") +
+   theme(axis.title.x=element_blank(),axis.text.x=element_text(angle=90,hjust=1,vjust=0.5)) + 
+   ggtitle("The effectiveness of Michael Jordan's team with and without him by year")
+ggplot() +
+   geom_line(data=with.kobe.by.season, aes(x=Season, y = team.effectiveness(with.kobe.by.season), group = 1), color = "gold2") + 
+   geom_line(data=without.kobe.by.season, aes(x=Season, y = team.effectiveness(without.kobe.by.season), group = 1), color = "darkorchid3") +
+   theme(axis.title.x=element_blank(),axis.text.x=element_text(angle=90,hjust=1,vjust=0.5)) + 
+   ggtitle("The effectiveness of Kobe Bryant's team with and without him by year") 
+ggplot() +
+   geom_line(data=with.lebron.by.season, aes(x=Season, y = team.effectiveness(with.lebron.by.season), group = 1), color = "firebrick") +
+   geom_line(data=without.lebron.by.season, aes(x=Season, y = team.effectiveness(without.lebron.by.season), group = 1), color = "black") +
+   theme(axis.title.x=element_blank(),axis.text.x=element_text(angle=90,hjust=1,vjust=0.5)) + 
+   ggtitle("The effectiveness of Lebron James's team with and without him by year")
+```
+```{r}
+jordan.difference <- mean(team.effectiveness(with.jordan.by.season)) - mean(team.effectiveness(without.jordan.by.season))
+jordan.difference
+kobe.difference <- mean(team.effectiveness(with.kobe.by.season)) - mean(team.effectiveness(without.kobe.by.season))
+kobe.difference
+lebron.difference <- mean(team.effectiveness(with.lebron.by.season)) - mean(team.effectiveness(without.lebron.by.season))
+lebron.difference
+```
+Az utolsó ábrákon azt láthatjuk, hogy az illető csapata hogy teljesített a Four Factors mérőszám alapján vele illetve nélküle. Mint az látható talán a legnagyobb hatást Jordan érte el az 1988-1989-es szezonban, viszont a többiekkel ellentétben volt, hogy a csapata jobban teljesített nélküle, mint vele, ami mindenképp egy meglepő fordulat, de az 1994-1995-ös szezon volt az első visszatérése, ezzel talán ez magyarázható.
+Kobe esetében is vannak a csapatához képest kiugró értékek, de nem akkorák, mint Jordan erős szezonja volt, ráadásul ő konstans javította csapata teljesítményét.
+A két ábra után érdekes látni, hogy LeBron esetében a két függvény mintha végig együtt mozogna, kb. ugyanolyan eltérésekkel.
+A számok azt mutatják, hogy a legnagyobb hatást LeBron játéka éri el a csapatán a Four Factors mutató szerint, ami után Kobe végül Jordan következik.
+
+Bevallom őszintén valójában a 'Ki a Greatest Of All Time?' vitában nem akarok állást foglalni, hiszen láthattuk, hogy a három játékos nem ugyanazon a poszton játszik, valamint nem szabad elfelejteni a kosárlabda állandó változását sem. Egyértelmű, hogy sosem lesz kimondható, hogy ki a GOAT. Az itt látottak alapján Kobe Bryant-nek volt a legnehezebb dolga, a leggyengébb csapa neki volt, míg Jordan és LeBron karrierjük nagy részét több sztárjátékos mellett töltötték. Ellenben az is látszik az első ábrákból, hogy Kobe nem produkált akkora számokat karrierje során, mint másik két 'vetélytársa'.
+Az utolsó számok alapján LeBron James-nek volt a legnagyobb hatása a csapatára, de ez adódhat abból is, hogy a posztjának több a csapatot érintő feladatköre is van.
+Jordan utolsóként végzett a számok alapján, de őt pedig a játék változása miatt rendkívül nehéz összehasonlítani a másik két játékossal. Az 1980-1990-es években még nem volt akkora showműsor a kosárlabda hatalmas megoldásokkal és assistokkal, mint manapság, valamint a 3 pontos vonalon, a 'festéken' kívül dobálás is sokkal nagyobb divat volt, mint most, amikor már nem éri meg a 2 pontos eldobni, ha egy-két lépéssel hátrébbról már 3 pontot érhetne.
+
